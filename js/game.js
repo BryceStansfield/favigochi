@@ -98,7 +98,7 @@ class Favigochi {
     // Changing into a new favigochi
     change_into(new_favi){
         this.cleanup()
-        cur_favigochi = new new_favi()
+        cur_favigochi = new new_favi(this.button_bar)
     }
 
     update(){
@@ -326,9 +326,9 @@ class TrickyKitty extends Favigochi{
 
 // Gravestone
 class GraveStone extends Favigochi{
-    constructor(){
+    constructor(button_bar){
         // Initializing super object
-        super()
+        super(button_bar)
 
         // List of the animations this favigochi has
         this.animations = {"idle": ["Gravestone-0-2", "Gravestone-1", "Gravestone-0-2", "Gravestone-3"]}
