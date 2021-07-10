@@ -148,7 +148,7 @@ class TrickyKitty extends Favigochi{
         this.skill = 0
 
         // Some extra event handling
-        this.currently_shooting = [0]
+        this.currently_shooting = false
 
         // List of the animations this favigochi has
         this.animations = {"idle1": ["TrickyKittyBase0"].concat(file_name_list("TrickyKittyBaser1-",1,17,"")),
@@ -201,17 +201,15 @@ class TrickyKitty extends Favigochi{
 
         // Are we currently shooting or going to start shooting?
         if(this.event_waiting == "shooting"){
-            this.event_waiting = false
+            this.currently_shooting = true
+            this.cur_shooting_round = this.shooting_manager()
+            this.cur_shooting_round.next()
             this.action_reset()
-            this.shooting_manager()
             return
         }
-        else if (this.currently_shooting[0] == 1 || this.currently_shooting[0] == 2){
-            this.shooting_manager()
+        else if (this.currently_shooting){
+            this.currently_shooting = !this.cur_shooting_round.next().value
             return        
-        }
-        else if (this.currently_shooting[0] == 3){
-            this.currently_shooting = [0]
         }
 
 
@@ -273,58 +271,51 @@ class TrickyKitty extends Favigochi{
     }
 
     // Shooting Manager
-    shooting_manager(){
-        //// Basically just a massive state tree
-        console.log(this.currently_shooting)
-        // Updating the shooting state, a massive mess
-        if(this.currently_shooting[0] == 0){
-            this.currently_shooting = [1,1]
-            if(Math.random() <= 1/4 + this.skill/4){
-                this.play_anim(this.animations["shooting"][1][1]["hit"], 1000)
-            }
-            else{
-                this.play_anim(this.animations["shooting"][1][1]["miss"], 1000)
-            }
-        }
-        else if(this.currently_shooting[0] == 1){
-            if(this.currently_shooting[1] == 3){
-                this.currently_shooting = [2]
-                if(Math.random() <= 1/8 + this.skill/8){
-                    this.play_anim(this.animations["shooting"][2]["3hits"], 1000)
-                }
-                else if(Math.random() <= 1/8 + this.skill/8){
-                    this.play_anim(this.animations["shooting"][2]["1hit"], 1000)
-                }
-                else{
-                    this.play_anim(this.animations["shooting"][2]["miss"], 1000)
-                }
-            }
-            else{
-                this.currently_shooting = [1, this.currently_shooting[1]+1]
-                if(Math.random() <= 1/6 + this.skill/6){
-                    this.play_anim(this.animations["shooting"][1][this.currently_shooting[1]]["hit"], 1000)
-                }
-                else{
-                    this.play_anim(this.animations["shooting"][1][this.currently_shooting[1]]["miss"], 1000)
-                }
-            }
+    * shooting_manager(){
+        // Set 1
+        if(Math.random() <= 1/4 + this.skill/4){
+            this.play_anim(this.animations["shooting"][1][1]["hit"], 1000)
         }
         else{
-            this.currently_shooting = [3]
-            if(Math.random <= 1/15 + this.skill/15){
-                this.play_anim(this.animations["shooting"][3]["hit"], 1000)
-            }
-            else if(Math.random <= 1/8 + this.skill/8){
-                this.play_anim(this.animations["shooting"][3]["minihit"], 1000)
+            this.play_anim(this.animations["shooting"][1][1]["miss"], 1000)
+        }
+        yield false;
+        
+        // Set two
+        for(var i = 0; i < 2; i += 1){
+            if(Math.random() <= 1/6 + this.skill/6){
+                this.play_anim(this.animations["shooting"][1][i+2]["hit"], 1000)
             }
             else{
-                this.play_anim(this.animations["shooting"][3]["miss"], 1000)
+                this.play_anim(this.animations["shooting"][1][i+2]["miss"], 1000)
             }
+            yield false;
+        }
+        if(Math.random() <= 1/8 + this.skill/8){
+            this.play_anim(this.animations["shooting"][2]["3hits"], 1000)
+        }
+        else if(Math.random() <= 1/8 + this.skill/8){
+            this.play_anim(this.animations["shooting"][2]["1hit"], 1000)
+        }
+        else{
+            this.play_anim(this.animations["shooting"][2]["miss"], 1000)
+        }
+        yield false;
+
+        // Set three
+        if(Math.random <= 1/15 + this.skill/15){
+            this.play_anim(this.animations["shooting"][3]["hit"], 1000)
+        }
+        else if(Math.random <= 1/8 + this.skill/8){
+            this.play_anim(this.animations["shooting"][3]["minihit"], 1000)
+        }
+        else{
+            this.play_anim(this.animations["shooting"][3]["miss"], 1000)
         }
 
         // Finally, updating out skill level
         this.skill = Math.min(this.skill + 0.2, 10)
-        return
+        return true;
     }
 }
 

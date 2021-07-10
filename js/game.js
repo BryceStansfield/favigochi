@@ -9,7 +9,9 @@ function game_update(start=false){
         animate(["StartAnim0-4","StartAnim1","StartAnim2","StartAnim3","StartAnim0-4","StartAnim5","StartAnim6","StartAnim7"],0,1000)
         return
     }
-    cur_favigochi.update()
+    else{
+        cur_favigochi.update()
+    }
 }
 
 
