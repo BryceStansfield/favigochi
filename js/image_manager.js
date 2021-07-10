@@ -1,3 +1,5 @@
+favilib = new FaviLib()
+
 //// Load files
 // Get list of filenames
 function file_name_list(prefix, start_i, end_i, post_fix){
@@ -31,24 +33,11 @@ for(e of to_add_template){
     }
 }
 
-
-// Image object list
-im_objects = []
-
-// Dictionary of image_names -> image_index
-im_name_to_ind = {}
-
 // Populating the list and dictionary
-for(var i = 0; i < all_images.length; i+=1){
-    // Populating the image list
-    temp_image = new Image()
-    temp_image.src = all_images[i]
-    im_objects.push(temp_image)
-
-    // Populating the dictionary
-    im_name_to_ind[all_images[i].split("/")[2].split(".")[0]] = i
-}
-
+favilib.load_uris(all_images, all_images.map(x => {
+    split_arr = x.split('/')
+    return split_arr[split_arr.length - 1].split('.')[0]
+}))
 
 //// Animation
 function animate(frames, cur_frame, frame_time){
@@ -56,11 +45,7 @@ function animate(frames, cur_frame, frame_time){
 
     //// Figure out if we're doing anything, and if we are, grab our images id
     if(cur_frame < frames.length){
-        // Grab the appropritate image object
-        image_obj = im_objects[im_name_to_ind[frames[cur_frame]]]
-
-        // Change the favicon to that image object
-        document.querySelector("link[rel*='icon']").href = image_obj.src
+        favilib.update_from_uri(frames[cur_frame])
 
         // Rerun this function in frame_time milliseconds
         setTimeout(animate, frame_time, frames, cur_frame+1, frame_time)
