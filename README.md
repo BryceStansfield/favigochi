@@ -9,4 +9,4 @@ Out of this came favigochi, the worlds first (as far as I'm aware) favicon-based
 ## Youtube
 [Link](https://youtu.be/7P5w79yHWn4)
 ## Images
-![](Gameplay Images/StartOfGame.PNG)
+![](https://raw.githubusercontent.com/BryceStansfield/favigochi/master/Gameplay%20Images/StartOfGame.PNG)
